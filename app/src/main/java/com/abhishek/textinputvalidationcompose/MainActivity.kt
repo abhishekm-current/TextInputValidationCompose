@@ -4,19 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.abhishek.textinputvalidationcompose.ui.theme.TextInputValidationComposeTheme
-import com.abhishek.textinputvalidationcompose.validation.ValidatableTextField
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.abhishek.textinputvalidationcompose.theme.TextInputValidationComposeTheme
+import com.abhishek.textinputvalidationcompose.ui.debitcard.DebitCardScreen
+import com.abhishek.textinputvalidationcompose.ui.home.HomeScreen
+import com.abhishek.textinputvalidationcompose.ui.ssn.SsnScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,38 +23,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             TextInputValidationComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    InputScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        viewModel = viewModel()
-                    )
+                    val paddedModifier = Modifier.padding(innerPadding)
+                    val navController = rememberNavController()
+                    NavHost(navController, startDestination = Home) {
+                        composable<Home> {
+                            HomeScreen(
+                                modifier = paddedModifier,
+                                onSsnClick = { navController.navigate(Ssn) },
+                                onDebitCardClick = { navController.navigate(DebitCard) }
+                            )
+                        }
+                        composable<Ssn> {
+                            SsnScreen(paddedModifier)
+                        }
+                        composable<DebitCard> {
+                            DebitCardScreen(paddedModifier)
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-@Composable
-fun InputScreen(
-    modifier: Modifier,
-    viewModel: MainViewModel
-) {
-    Column(modifier = modifier) {
-        ValidatableTextField(
-            label = "Name",
-            validatableTextFieldState = viewModel.nameState
-        )
-
-        ValidatableTextField(
-            label = "City",
-            validatableTextFieldState = viewModel.cityState
-        )
-
-        Button(
-            enabled = viewModel.isScreenValid,
-            onClick = {}
-        ) {
-            Text("Submit")
-        }
-    }
-}
-

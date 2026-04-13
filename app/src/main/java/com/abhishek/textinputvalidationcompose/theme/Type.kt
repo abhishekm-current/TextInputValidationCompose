@@ -1,4 +1,4 @@
-package com.abhishek.textinputvalidationcompose.ui.theme
+package com.abhishek.textinputvalidationcompose.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
