@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -26,11 +26,8 @@ import com.current.digitsOnly
 @Composable
 fun SsnScreen(modifier: Modifier) {
     val viewModel: SsnViewModel = viewModel()
-    val isAllValid by remember {
-        derivedStateOf {
-            isAllValid(viewModel.firstThree, viewModel.nextTwo, viewModel.lastFour)
-        }
-    }
+    val isAllValid by isAllValid(viewModel.firstThree, viewModel.nextTwo, viewModel.lastFour).collectAsState(false)
+
 
     Column(
         modifier = modifier
@@ -43,28 +40,28 @@ fun SsnScreen(modifier: Modifier) {
         ) {
             FormTextField(
                 modifier = Modifier.weight(3f),
-                label = "First 3",
+                label = "###",
                 state = viewModel.firstThree,
-                maxLength = 3,
+                //maxLength = 3,
                 inputTransformation = InputTransformation.digitsOnly(),
-                nextFocusRequester = viewModel.nextTwo.focusRequester
+                //nextFocusRequester = viewModel.nextTwo.focusRequester
             )
             FormTextField(
                 modifier = Modifier.weight(2f),
-                label = "Next 2",
+                label = "##",
                 state = viewModel.nextTwo,
-                maxLength = 2,
+                // maxLength = 2,
                 inputTransformation = InputTransformation.digitsOnly(),
-                previousFocusRequester = viewModel.firstThree.focusRequester,
-                nextFocusRequester = viewModel.lastFour.focusRequester
+                // previousFocusRequester = viewModel.firstThree.focusRequester,
+                // nextFocusRequester = viewModel.lastFour.focusRequester
             )
             FormTextField(
                 modifier = Modifier.weight(4f),
-                label = "Last 4",
+                label = "####",
                 state = viewModel.lastFour,
-                maxLength = 4,
+                // maxLength = 4,
                 inputTransformation = InputTransformation.digitsOnly(),
-                previousFocusRequester = viewModel.nextTwo.focusRequester
+                // previousFocusRequester = viewModel.nextTwo.focusRequester
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
@@ -73,5 +70,9 @@ fun SsnScreen(modifier: Modifier) {
             text = if (isAllValid) "Valid" else "Invalid",
             color = if (isAllValid) Color.Green else Color.Red
         )
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(onClick = viewModel::manualSsnError) {
+            Text("Set Debit Card Manual Error")
+        }
     }
 }

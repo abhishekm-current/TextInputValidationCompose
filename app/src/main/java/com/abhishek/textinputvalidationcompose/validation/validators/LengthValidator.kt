@@ -1,5 +1,6 @@
 package com.abhishek.textinputvalidationcompose.validation.validators
 
+import androidx.core.text.trimmedLength
 import com.current.InputValidator
 
 class LengthValidator(private val requiredLength: Int) : InputValidator {
@@ -8,8 +9,8 @@ class LengthValidator(private val requiredLength: Int) : InputValidator {
     }
 
     override fun getErrorOnFocusLost(input: String): String? {
-        return if (input.length < requiredLength) {
-            "need $requiredLength chars"
+        return if (input.trimmedLength() < requiredLength) {
+            "Enter at least $requiredLength chars"
         } else {
             null
         }
