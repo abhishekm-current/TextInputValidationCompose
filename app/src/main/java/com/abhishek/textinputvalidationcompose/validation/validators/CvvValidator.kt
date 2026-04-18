@@ -10,7 +10,7 @@ object CvvValidator : InputValidator {
     override fun getErrorOnFocusLost(input: String): String? {
         // both 3 and 4 are okay
         return if (input.length < 3) {
-            "need 3/4 chars"
+            "Enter 3/4 chars"
         } else {
             null
         }

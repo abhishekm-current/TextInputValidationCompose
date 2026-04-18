@@ -18,7 +18,7 @@ object ExpirationValidator : InputValidator {
 
     private fun checkValidExpiry(input: String): String? {
         return if (input.length != 4) {
-            "enter mmyy"
+            "Enter valid mmyy"
         } else {
             val mm = input.substring(0, 2)
                 .toInt()
@@ -31,7 +31,7 @@ object ExpirationValidator : InputValidator {
                 yy == 26 -> mm in 5..12
                 else -> mm in 1..12
             }
-            if (isValid) null else "Enter  valid expiry"
+            if (isValid) null else "Enter valid expiry"
         }
     }
 }

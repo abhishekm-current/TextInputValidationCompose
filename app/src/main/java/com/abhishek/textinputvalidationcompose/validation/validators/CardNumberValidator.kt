@@ -15,7 +15,7 @@ object CardNumberValidator : InputValidator {
 
     override fun getErrorOnFocusLost(input: String): String? {
         return if (input.length < 16) {
-            "need 16 chars"
+            "Enter 16 digits"
         } else if (!ExternalDebitCard.validateCardNumber(input)) {
             "Invalid card number"
         } else {

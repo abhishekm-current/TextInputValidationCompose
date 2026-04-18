@@ -2,83 +2,47 @@ package com.abhishek.textinputvalidationcompose.validation.core
 
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.OutputTransformation
-import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import com.abhishek.textinputvalidationcompose.validation.core.FormTextFieldState.ValidationState
-import kotlinx.coroutines.flow.drop
 
 @Composable
 fun FormTextField(
     modifier: Modifier = Modifier,
     label: String,
     state: FormTextFieldState,
-    maxLength: Int? = null,
+    hideErrorOnEmpty: Boolean = true,
     inputTransformation: InputTransformation? = null,
     outputTransformation: OutputTransformation? = null,
-    previousFocusRequester: FocusRequester? = null,
-    nextFocusRequester: FocusRequester? = null
 ) {
-    val invalidMessage = (state.validationState as? ValidationState.InValid)?.invalidMessage
+    val validationState by state.validationState.collectAsState()
+    var isFocused by remember { mutableStateOf(false) }
+
+    val errorMessage = when (val vs = validationState) {
+        ValidationState.Valid ->
+            null
+        is ValidationState.InValid ->
+            when {
+                hideErrorOnEmpty && state.textFieldState.text.isEmpty() -> null // hide error if empty
+                isFocused -> vs.focusedError
+                else -> vs.unfocusedError
+            }
+    }
 
     OutlinedTextField(
         label = { Text(label) },
         state = state.textFieldState,
-        modifier = modifier
-            .focusRequester(state.focusRequester)
-            .onFocusChanged { focusState ->
-                state.isFocused = focusState.isFocused
-            },
-        inputTransformation = when {
-            inputTransformation != null && maxLength != null -> inputTransformation.maxLength(maxLength)
-            inputTransformation != null -> inputTransformation
-            maxLength != null -> InputTransformation.maxLength(maxLength)
-            else -> null
-        },
+        modifier = modifier.onFocusChanged { isFocused = it.isFocused },
+        inputTransformation = inputTransformation,
         outputTransformation = outputTransformation,
-        isError = invalidMessage != null,
-        supportingText = { Text(invalidMessage ?: "") }
+        isError = errorMessage != null,
+        supportingText = errorMessage?.let { { Text(it) } }
     )
-
-    if (state.customError != null) {
-        LaunchedEffect(Unit) {
-            snapshotFlow { state.textFieldState.text }
-                .drop(1) // ignore the current value
-                .collect { state.customError = null }
-        }
-
-    }
-
-    if (maxLength != null && nextFocusRequester != null) {
-        val reachedMaxLength by remember(maxLength) {
-            derivedStateOf { state.textFieldState.text.length >= maxLength }
-        }
-
-        LaunchedEffect(reachedMaxLength, nextFocusRequester) {
-            if (reachedMaxLength) {
-                nextFocusRequester.requestFocus()
-            }
-        }
-    }
-
-    if (previousFocusRequester != null) {
-        val reachedZeroLength by remember {
-            derivedStateOf { state.textFieldState.text.isEmpty() }
-        }
-        LaunchedEffect(reachedZeroLength) {
-            if (reachedZeroLength) {
-                previousFocusRequester.requestFocus()
-            }
-        }
-    }
 }
