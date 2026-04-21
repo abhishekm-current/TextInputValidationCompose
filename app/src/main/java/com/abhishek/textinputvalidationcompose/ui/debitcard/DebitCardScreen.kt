@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,20 +43,20 @@ fun DebitCardScreen(modifier: Modifier) {
             modifier = Modifier.fillMaxWidth(),
             label = "Card Number",
             state = viewModel.cardNumberState,
-            inputTransformation = InputTransformation.digitsOnly(),
+            inputTransformation = InputTransformation.digitsOnly().maxLength(16),
         )
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             FormTextField(
                 modifier = Modifier.weight(1f),
                 label = "Expiration",
                 state = viewModel.expirationState,
-                inputTransformation = InputTransformation.digitsOnly(),
+                inputTransformation = InputTransformation.digitsOnly().maxLength(4),
             )
             FormTextField(
                 modifier = Modifier.weight(1f),
                 label = "CVV",
                 state = viewModel.cvvState,
-                inputTransformation = InputTransformation.digitsOnly(),
+                inputTransformation = InputTransformation.digitsOnly().maxLength(4),
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
